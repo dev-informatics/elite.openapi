@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eddb.Sdk", "Eddb.Sdk\Eddb.Sdk.csproj", "{B87574E7-6C32-4B8E-A49D-8102357D8938}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eddb.ConsoleApp", "Eddb.ConsoleApp\Eddb.ConsoleApp.csproj", "{DFB5180D-0131-4F5A-BA01-1979F5532A79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eddb.Loader", "Eddb.Loader\Eddb.Loader.csproj", "{A7DEA302-FD16-4B53-BC7C-91E9A20ACF4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eddb.Sdk.Data.Core", "Eddb.Sdk.Data.Core\Eddb.Sdk.Data.Core.csproj", "{ADFA76E8-AD48-4971-8796-C7BF7346F7D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B87574E7-6C32-4B8E-A49D-8102357D8938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B87574E7-6C32-4B8E-A49D-8102357D8938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B87574E7-6C32-4B8E-A49D-8102357D8938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B87574E7-6C32-4B8E-A49D-8102357D8938}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFB5180D-0131-4F5A-BA01-1979F5532A79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFB5180D-0131-4F5A-BA01-1979F5532A79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFB5180D-0131-4F5A-BA01-1979F5532A79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFB5180D-0131-4F5A-BA01-1979F5532A79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7DEA302-FD16-4B53-BC7C-91E9A20ACF4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7DEA302-FD16-4B53-BC7C-91E9A20ACF4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7DEA302-FD16-4B53-BC7C-91E9A20ACF4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7DEA302-FD16-4B53-BC7C-91E9A20ACF4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADFA76E8-AD48-4971-8796-C7BF7346F7D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADFA76E8-AD48-4971-8796-C7BF7346F7D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADFA76E8-AD48-4971-8796-C7BF7346F7D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADFA76E8-AD48-4971-8796-C7BF7346F7D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
