@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -11,7 +12,7 @@ namespace Eddb.Sdk
             Commodities,
             Systems,
             Stations,
-            StationsLite
+            Stations_Lite
         }
 
         private readonly string _baseUri;
@@ -27,7 +28,10 @@ namespace Eddb.Sdk
 
         public void DownloadJson(ConnectionEntity connectionEntity, string filepath)
         {
-            var typePart = _splitter.Replace(connectionEntity.ToString().ToLower(), "_");            
+            if (!Directory.Exists(filepath))
+                Directory.CreateDirectory(filepath);
+
+            var typePart = connectionEntity.ToString().ToLower();           
             var uri = new Uri(_baseUri + "/" + typePart + ".json");
 
             WebClient client = new WebClient();

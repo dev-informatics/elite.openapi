@@ -1,45 +1,51 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Eddb.Loader
 {
     class EddbLoaderService
     {
         private Timer _timer;
-        private readonly int OneDay = 1440000;
+        private readonly int OneDay = ((1000 * 60) * 60) * 24;
 
         public EddbLoaderService()
         {
+            DoWork(null, null);
+            _timer = new Timer(OneDay);
+            _timer.Elapsed += DoWork;
         }
 
         public void Start()
         {
-            var nowPlusTomorrow = DateTime.Now.AddDays(1);
-            var tomorrow = new DateTime(nowPlusTomorrow.Year, nowPlusTomorrow.Month, nowPlusTomorrow.Day, 0, 0, 0);
-            _timer = new Timer(DoWork, null, (int)tomorrow.Subtract(DateTime.Now).TotalMilliseconds, OneDay);        
+            _timer.Start();
         }
 
         public void Stop()
         {
-            _timer.Dispose();
+            _timer.Stop();
         }
 
-        private void DoWork(object state)
+        private void DoWork(object sender, ElapsedEventArgs e)
         {
-            RetrieveData();
-            LoadData();   
+            RetrieveDataAync();
+            LoadData();
         }
 
-        private void RetrieveData()
+        private async void RetrieveDataAync()
         {
             var connection = Sdk.ConnectionManager.CreateConnection(Sdk.ConnectionManager.BaseEddbUri);
-            var downloadPath = "f:\\eddb\\" + DateTime.Now.ToShortDateString();
+            var downloadPath = "C:\\eddb\\" + DateTime.Now.ToShortDateString().Replace("/", "");
 
-            Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Commodities, downloadPath); });
-            Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Stations, downloadPath); });
-            Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.StationsLite, downloadPath); });
-            Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Systems, downloadPath); });
+            var task1 = Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Commodities, downloadPath); });
+            var task2 = Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Stations, downloadPath); });
+
+            Task.WaitAll(task1, task2);
+
+            var task3 = Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Stations_Lite, downloadPath); });
+            var task4 = Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Systems, downloadPath); });
+
+            Task.WaitAll(task3, task4);
         }
 
         private void LoadData()
