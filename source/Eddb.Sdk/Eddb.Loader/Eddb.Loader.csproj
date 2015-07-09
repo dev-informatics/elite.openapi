@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,9 +50,14 @@
       <HintPath>..\packages\Topshelf.3.2.0\lib\net40-full\Topshelf.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Topshelf.Ninject, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Topshelf.Ninject.0.4.0.0\lib\net45\Topshelf.Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EddbLoaderService.cs" />
+    <Compile Include="LoaderModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -57,6 +66,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Eddb.Sdk.Data.Core\Eddb.Sdk.Data.Core.csproj">
+      <Project>{adfa76e8-ad48-4971-8796-c7bf7346f7d5}</Project>
+      <Name>Eddb.Sdk.Data.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eddb.Sdk.Data.MongoDb\Eddb.Sdk.Data.MongoDb.csproj">
+      <Project>{929e489b-f759-44aa-aa39-e79d89d62d1d}</Project>
+      <Name>Eddb.Sdk.Data.MongoDb</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Eddb.Sdk\Eddb.Sdk.csproj">
       <Project>{b87574e7-6c32-4b8e-a49d-8102357d8938}</Project>
       <Name>Eddb.Sdk</Name>

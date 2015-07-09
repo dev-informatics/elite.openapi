@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eddb.Loader", "Eddb.Loader\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eddb.Sdk.Data.Core", "Eddb.Sdk.Data.Core\Eddb.Sdk.Data.Core.csproj", "{ADFA76E8-AD48-4971-8796-C7BF7346F7D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eddb.Sdk.Data.MongoDb", "Eddb.Sdk.Data.MongoDb\Eddb.Sdk.Data.MongoDb.csproj", "{929E489B-F759-44AA-AA39-E79D89D62D1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{ADFA76E8-AD48-4971-8796-C7BF7346F7D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADFA76E8-AD48-4971-8796-C7BF7346F7D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADFA76E8-AD48-4971-8796-C7BF7346F7D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{929E489B-F759-44AA-AA39-E79D89D62D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{929E489B-F759-44AA-AA39-E79D89D62D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{929E489B-F759-44AA-AA39-E79D89D62D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{929E489B-F759-44AA-AA39-E79D89D62D1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
