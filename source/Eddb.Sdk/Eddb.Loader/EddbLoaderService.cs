@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -35,17 +36,12 @@ namespace Eddb.Loader
         private async void RetrieveDataAync()
         {
             var connection = Sdk.ConnectionManager.CreateConnection(Sdk.ConnectionManager.BaseEddbUri);
-            var downloadPath = "C:\\eddb\\" + DateTime.Now.ToShortDateString().Replace("/", "");
+            var downloadPath = ConfigurationManager.AppSettings["DumpDirectory"].ToString() + "\\" + DateTime.Now.ToShortDateString().Replace("/", "");
 
-            var task1 = Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Commodities, downloadPath); });
-            var task2 = Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Stations, downloadPath); });
-
-            Task.WaitAll(task1, task2);
-
-            var task3 = Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Stations_Lite, downloadPath); });
-            var task4 = Task.Factory.StartNew(() => { connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Systems, downloadPath); });
-
-            Task.WaitAll(task3, task4);
+            connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Commodities, downloadPath);
+            connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Stations, downloadPath);
+            connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Stations_Lite, downloadPath);
+            connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Systems, downloadPath);
         }
 
         private void LoadData()
