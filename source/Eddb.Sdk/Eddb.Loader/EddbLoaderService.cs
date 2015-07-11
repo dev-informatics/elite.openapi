@@ -11,15 +11,18 @@ namespace Eddb.Loader
         private readonly int OneDay = ((1000 * 60) * 60) * 24;
 
         public EddbLoaderService()
-        {
-            DoWork(null, null);
+        {            
             _timer = new Timer(OneDay);
             _timer.Elapsed += DoWork;
         }
 
         public void Start()
         {
-            _timer.Start();
+            Task.Run(() =>
+            {
+                DoWork(null, null);
+                _timer.Start();
+            });            
         }
 
         public void Stop()
@@ -29,11 +32,11 @@ namespace Eddb.Loader
 
         private void DoWork(object sender, ElapsedEventArgs e)
         {
-            RetrieveDataAync();
+            RetrieveData();
             LoadData();
         }
 
-        private async void RetrieveDataAync()
+        private void RetrieveData()
         {
             var connection = Sdk.ConnectionManager.CreateConnection(Sdk.ConnectionManager.BaseEddbUri);
             var downloadPath = ConfigurationManager.AppSettings["DumpDirectory"].ToString() + "\\" + DateTime.Now.ToShortDateString().Replace("/", "");
