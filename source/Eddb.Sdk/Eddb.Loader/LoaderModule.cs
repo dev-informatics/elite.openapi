@@ -1,6 +1,7 @@
 ﻿using Eddb.Sdk.Data.Core;
 using Eddb.Sdk.Data.MongoDb;
 using Ninject.Modules;
+using System.Configuration;
 
 namespace Eddb.Loader
 {
@@ -8,7 +9,9 @@ namespace Eddb.Loader
     {
         public override void Load()
         {
-            Bind<IPersistenceRepository>().To<MongoDbPersistenceRepository>().InSingletonScope().WithConstructorArgument("");
+            Bind<IPersistenceRepository>().To<MongoDbPersistenceRepository>()
+                .InSingletonScope()
+                .WithConstructorArgument(ConfigurationManager.AppSettings["MongoDbConnectionString"]);
         }
     }
 }
