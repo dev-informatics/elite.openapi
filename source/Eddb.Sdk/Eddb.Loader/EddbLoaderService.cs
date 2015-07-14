@@ -40,7 +40,7 @@ namespace Eddb.Loader
         {
             var downloadPath = ConfigurationManager.AppSettings["DumpDirectory"].ToString() + "\\" + DateTime.Now.ToShortDateString().Replace("/", "");
 
-            //RetrieveData(downloadPath);
+            RetrieveData(downloadPath);
             LoadData(downloadPath);
         }
 
