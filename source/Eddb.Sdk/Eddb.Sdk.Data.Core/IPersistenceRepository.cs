@@ -1,7 +1,11 @@
-﻿namespace Eddb.Sdk.Data.Core
+﻿using System.Threading.Tasks;
+
+namespace Eddb.Sdk.Data.Core
 {
     public interface IPersistenceRepository
     {
-        void Save<T>(T entity);
+        Task SaveAllAsync(string fileName, string collectionName);
+
+        Task DropTableAsync(string collectionName);
     }
 }

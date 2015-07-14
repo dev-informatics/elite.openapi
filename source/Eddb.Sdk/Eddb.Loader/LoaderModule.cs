@@ -9,9 +9,11 @@ namespace Eddb.Loader
     {
         public override void Load()
         {
+            Bind<EddbLoaderService>().ToSelf();
             Bind<IPersistenceRepository>().To<MongoDbPersistenceRepository>()
                 .InSingletonScope()
-                .WithConstructorArgument(ConfigurationManager.AppSettings["MongoDbConnectionString"]);
+                .WithConstructorArgument("connectionString", ConfigurationManager.AppSettings["MongoDbConnectionString"])
+                .WithConstructorArgument("database", ConfigurationManager.AppSettings["MongoDatabase"]);
         }
     }
 }
