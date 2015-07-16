@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -34,8 +35,22 @@ namespace Eddb.Sdk
             var typePart = connectionEntity.ToString().ToLower();           
             var uri = new Uri(_baseUri + "/" + typePart + ".json");
 
+            string fileName = filepath + "\\" + typePart + ".json";
             WebClient client = new WebClient();
-            client.DownloadFile(uri, filepath + "\\" + typePart + ".json");
+
+            using (StreamReader reader = new StreamReader(new MemoryStream(client.DownloadData(uri))))
+            {
+                var content = reader.ReadToEnd();
+                JArray jsonArray = JArray.Parse(content);               
+
+                using (StreamWriter writer = new StreamWriter(File.Create(fileName)))
+                {
+                    foreach (var item in jsonArray.Children())
+                    {
+                        writer.WriteLine(item.ToString(Newtonsoft.Json.Formatting.None));
+                    }
+                }
+            }              
         }
     }
 }
