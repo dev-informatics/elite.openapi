@@ -13,7 +13,8 @@ namespace Eddb.Loader
             Bind<IPersistenceRepository>().To<MongoDbPersistenceRepository>()
                 .InSingletonScope()
                 .WithConstructorArgument("connectionString", ConfigurationManager.AppSettings["MongoDbConnectionString"])
-                .WithConstructorArgument("database", ConfigurationManager.AppSettings["MongoDatabase"]);
+                .WithConstructorArgument("database", ConfigurationManager.AppSettings["MongoDatabase"]);            
+            Bind<CollectionRepositoryFactory>().ToSelf();
         }
     }
 }

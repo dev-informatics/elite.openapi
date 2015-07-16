@@ -12,11 +12,11 @@ namespace Eddb.Loader
     {
         private Timer _timer;
         private readonly int OneDay = ((1000 * 60) * 60) * 24;
-        private readonly IPersistenceRepository _repository;
+        private readonly CollectionRepositoryFactory _factory;
 
-        public EddbLoaderService(IPersistenceRepository repository)
+        public EddbLoaderService(CollectionRepositoryFactory factory)
         {
-            _repository = repository;
+            _factory = factory;
             DoWork(null, null);
             //_timer = new Timer(OneDay);
             //_timer.Elapsed += DoWork;
@@ -41,7 +41,7 @@ namespace Eddb.Loader
             var downloadPath = ConfigurationManager.AppSettings["DumpDirectory"].ToString() + "\\" + DateTime.Now.ToShortDateString().Replace("/", "");
 
             RetrieveData(downloadPath);
-            LoadData(downloadPath);
+            Task.WaitAll(LoadDataAsync(downloadPath));
         }
 
         private void RetrieveData(string saveLocation)
@@ -54,18 +54,38 @@ namespace Eddb.Loader
             connection.DownloadJson(Sdk.EddbConnection.ConnectionEntity.Systems, saveLocation);
         }
 
-        private void LoadData(string saveLocation)
+        private async Task LoadDataAsync(string saveLocation)
         {
             List<Task> tasks = new List<Task>();
 
             foreach(var file in Directory.GetFiles(saveLocation))
             {
                 FileInfo fileInfo = new FileInfo(file);
-                Task.WaitAll(_repository.DropTableAsync(fileInfo.Name.Replace(".json", "")));                
-                tasks.Add(_repository.SaveAllAsync(file, fileInfo.Name.Replace(".json", "")));
+                var repository = _factory.Get(fileInfo.Name.Replace(".json", ""));
+                Task.WaitAll(repository.DropCollectionAsync());                
+                tasks.Add(repository.BatchSaveAsync(await LoadFromFileAsync(fileInfo.FullName)));
             }
 
             Task.WaitAll(tasks.ToArray()); 
-        } 
+        }
+
+        private async Task<ICollection<string>> LoadFromFileAsync(string fileName)
+        {
+            List<string> jsonCollection = new List<string>();
+
+            using (StreamReader reader = new StreamReader(fileName))
+            {
+                string line;
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(line))
+                    {
+                        jsonCollection.Add(line);
+                    }
+                }
+            }
+
+            return jsonCollection;
+        }
     }
 }

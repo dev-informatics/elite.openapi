@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Eddb.Sdk.Data.Core
 {
     public interface ICollectionRepository
     {
-        void SaveAsync(string jsonString);
+        Task SaveAsync(string jsonString);
 
-        void BatchSaveAsync(IEnumerable<string> jsonCollection);
+        Task BatchSaveAsync(IEnumerable<string> jsonCollection);
+
+        Task DropCollectionAsync();
     }
 }
