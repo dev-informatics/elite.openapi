@@ -12,11 +12,11 @@ namespace Eddb.Loader
         {
             HostFactory.Run(x =>
             {
-                x.UseNinject(new LoaderModule());
-                     
+                var hostConfig = x.UseNinject(new LoaderModule());
+                
                 x.Service<EddbLoaderService>(s =>
-                {                    
-                    s.ConstructUsing(name => new EddbLoaderService());
+                {
+                    s.ConstructUsingNinject();
                     s.WhenStarted(el => el.Start());
                     s.WhenStopped(el => el.Stop());
                 });
