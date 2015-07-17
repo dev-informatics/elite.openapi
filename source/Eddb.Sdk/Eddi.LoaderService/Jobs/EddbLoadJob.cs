@@ -9,7 +9,7 @@ using Eddb.Sdk;
 using Eddb.Sdk.Data.Core;
 using Quartz;
 
-namespace Eddi.LoaderService.Jobs.Eddb
+namespace Eddi.LoaderService.Jobs
 {
     public class EddbLoadJob : IJob
     {
@@ -26,16 +26,14 @@ namespace Eddi.LoaderService.Jobs.Eddb
         {
             var downloadPath = ConfigurationManager.AppSettings["DumpDirectory"].ToString() + "\\" + DateTime.Now.ToShortDateString().Replace("/", "");
 
-            //RetrieveData(downloadPath).ContinueWith(async task =>
-            //    await LoadData(downloadPath)).Wait();
-
-            RetrieveData(downloadPath).Wait();
-            
-            LoadData(downloadPath).Wait();
+            RetrieveData(downloadPath)
+                .ContinueWith(task => LoadData(downloadPath))
+                .Unwrap().Wait();
         }
 
         private async Task RetrieveData(string saveLocation)
         {
+            //TODO: This should be a dependency of some sort.
             var connection = ConnectionManager.CreateConnection(ConnectionManager.BaseEddbUri);
 
             await connection.DownloadJson(EddbConnection.ConnectionEntity.Commodities, saveLocation);
@@ -46,27 +44,14 @@ namespace Eddi.LoaderService.Jobs.Eddb
 
         private async Task LoadData(string saveLocation)
         {
-            List<Task> deletionTasks = new List<Task>();
-            List<Task> additionTasks = new List<Task>();
-
-            var files = Directory.GetFiles(saveLocation);
-
-            foreach (var file in files)
-            {
-                FileInfo fileInfo = new FileInfo(file);
-
-                deletionTasks.Add(Repository.DropTableAsync(fileInfo.Name.Replace(".json", "")));
-            }
-
-            await Task.WhenAll(deletionTasks);
-
-            foreach(var file in files)
-            {
-                FileInfo fileInfo = new FileInfo(file);
-                additionTasks.Add(Repository.SaveAllAsync(file, fileInfo.Name.Replace(".json", "")));
-            }
-
-            await Task.WhenAll(additionTasks);
+            await Task.WhenAll(
+                Directory.GetFiles(saveLocation)
+                    .Select(file => new { file, fileInfo = new FileInfo(file) })
+                    .Select(container =>
+                        Repository.DropTableAsync(container.fileInfo.Name.Replace(".json", ""))
+                            .ContinueWith(task =>
+                                Repository.SaveAllAsync(container.file, container.fileInfo.Name.Replace(".json", "")))
+                            .Unwrap()));
         }
     }
 }

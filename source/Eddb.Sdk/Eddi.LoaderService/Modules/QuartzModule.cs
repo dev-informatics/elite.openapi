@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Eddb.Sdk.Data.Core;
 using Eddb.Sdk.Data.MongoDb;
 using Ninject;
+using Ninject.Extensions.Quartz;
 using Ninject.Modules;
 using Quartz;
 using Quartz.Impl;
@@ -18,8 +19,8 @@ namespace Eddi.LoaderService.Modules
     {
         public override void Load()
         {
-            Bind<ISchedulerFactory>().To<NinjectSchedulerFactory>();
-            Bind<IScheduler>().ToMethod(ctx => ctx.Kernel.Get<ISchedulerFactory>().GetScheduler());
+            Rebind<ISchedulerFactory>().To<NinjectSchedulerFactory>();
+            Rebind<IScheduler>().ToMethod(ctx => ctx.Kernel.Get<ISchedulerFactory>().GetScheduler());
         }
     }
 }

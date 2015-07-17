@@ -15,15 +15,16 @@ namespace Eddi.LoaderService
         {
             HostFactory.Run(host =>
             {
-                host
-                .UseNinject(new QuartzModule(), new PersistenceModule())
-                .Service<HostService>(service =>
-                {
-                    service
-                        .ConstructUsingNinject()
-                        .WhenStarted(svc => svc.Start())
-                        .WhenStopped(svc => svc.Stop());
-                });
+                host.UseNinject(new QuartzModule(),
+                                new PersistenceModule(),
+                                new CancellationModule(),
+                                new EddnModule())
+                    .Service<HostService>(service =>
+                    {
+                        service.ConstructUsingNinject()
+                            .WhenStarted(svc => svc.Start())
+                            .WhenStopped(svc => svc.Stop());
+                    });
             });
         }
     }

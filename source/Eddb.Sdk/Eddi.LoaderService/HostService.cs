@@ -2,37 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Eddi.LoaderService.Jobs.Eddb;
+using System.Threading;
+using Eddi.LoaderService.Jobs;
+using Eddi.LoaderService.Providers;
 using Quartz;
 
 namespace Eddi.LoaderService
 {
     public class HostService
     {
-        private readonly IScheduler _Scheduler;
+        protected IScheduler Scheduler { get; }
 
-        protected IScheduler Scheduler => _Scheduler;
+        protected CancellationTokenSource EddnListernerCancellationSource { get; set; }
 
-        public HostService(IScheduler scheduler)
+        public HostService(IScheduler scheduler, CancellationTokenSourceProvider cancellationSourceProvider)
         {
-            _Scheduler = scheduler;
+            Scheduler = scheduler;
+
+            EddnListernerCancellationSource = cancellationSourceProvider
+                .RetrieveOrCreate<EddnListenerJob>();
         }
 
         public bool Start()
         {
             try
             {
-                Scheduler
-                    .ScheduleJob(
-                        JobBuilder.Create<EddbLoadJob>().Build(),
-                        TriggerBuilder.Create()
-                            .WithSimpleSchedule(schedule =>
-                                schedule.WithIntervalInHours(24))
-                            .StartNow()
-                            .Build());
+                ScheduleEddbLoad();
 
-                ////TODO: Log
+                ScheduleEddnListener();
+
+                //TODO: Log
 
                 Scheduler.Start();
 
@@ -50,9 +49,34 @@ namespace Eddi.LoaderService
         public bool Stop()
         {
             //TODO: Log
-            //Scheduler.Shutdown(true);
+            EddnListernerCancellationSource.Cancel();
+
+            Scheduler.Shutdown(true);
 
             return true;
+        }
+
+        protected void ScheduleEddbLoad()
+        {
+            Scheduler.ScheduleJob(
+                JobBuilder.Create<EddbLoadJob>().Build(),
+                TriggerBuilder.Create()
+                    .WithSimpleSchedule(schedule =>
+                        schedule.WithIntervalInHours(24))
+                    //Not sure if this is necessary or if the StartAt method is smart enough to move to the next day.
+                    .StartAt(DateTime.Now.Hour < 1
+                        ? DateBuilder.TodayAt(1, 0, 0)
+                        : DateBuilder.TomorrowAt(1, 0, 0))
+                    .Build());
+        }
+
+        protected void ScheduleEddnListener()
+        {
+            Scheduler.ScheduleJob(
+                JobBuilder.Create<EddnListenerJob>().Build(),
+                TriggerBuilder.Create()
+                    .StartNow()
+                    .Build());
         }
     }
 }
