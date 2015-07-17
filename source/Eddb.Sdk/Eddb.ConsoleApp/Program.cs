@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using Eddn.Sdk;
+using Eddn.Listener;
 
 namespace Eddb.ConsoleApp
 {
@@ -13,7 +13,7 @@ namespace Eddb.ConsoleApp
 
             var cts = new CancellationTokenSource();
 
-            EddnSubscriber
+            EddnListener
                 .Create()
                 .BeginListener((message) => Console.WriteLine(message));
 
