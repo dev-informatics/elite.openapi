@@ -106,6 +106,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectionRepositoryFactory.cs" />
     <Compile Include="Providers\CancellationTokenProvider.cs" />
     <Compile Include="Providers\CancellationTokenSourceProvider.cs" />
     <Compile Include="HostService.cs" />

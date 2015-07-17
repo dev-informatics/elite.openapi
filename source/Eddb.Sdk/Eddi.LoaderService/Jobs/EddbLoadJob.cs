@@ -13,25 +13,25 @@ namespace Eddi.LoaderService.Jobs
 {
     public class EddbLoadJob : IJob
     {
-        private readonly IPersistenceRepository _Repository;
+        protected CollectionRepositoryFactory RepositoryFactory { get; }
 
-        protected IPersistenceRepository Repository { get { return _Repository; } }
-
-        public EddbLoadJob(IPersistenceRepository repository)
+        public EddbLoadJob(CollectionRepositoryFactory repositoryFactory)
         {
-            _Repository = repository;
+            RepositoryFactory = repositoryFactory;
         }
 
         public void Execute(IJobExecutionContext context)
         {
-            var downloadPath = ConfigurationManager.AppSettings["DumpDirectory"].ToString() + "\\" + DateTime.Now.ToShortDateString().Replace("/", "");
+            var downloadPath = ConfigurationManager.AppSettings["DumpDirectory"] + "\\" + DateTime.Now.ToShortDateString().Replace("/", "");
 
             RetrieveData(downloadPath)
-                .ContinueWith(task => LoadData(downloadPath))
-                .Unwrap().Wait();
+                .ContinueWith(task =>
+                {
+                    return LoadData(downloadPath);
+                }).Unwrap().Wait();
         }
 
-        private async Task RetrieveData(string saveLocation)
+        protected async Task RetrieveData(string saveLocation)
         {
             //TODO: This should be a dependency of some sort.
             var connection = ConnectionManager.CreateConnection(ConnectionManager.BaseEddbUri);
@@ -45,13 +45,37 @@ namespace Eddi.LoaderService.Jobs
         private async Task LoadData(string saveLocation)
         {
             await Task.WhenAll(
-                Directory.GetFiles(saveLocation)
-                    .Select(file => new { file, fileInfo = new FileInfo(file) })
+                new DirectoryInfo(saveLocation).GetFiles()
+                    .Select(fileInfo => new
+                    {
+                        fileInfo,
+                        repository = RepositoryFactory.Get(fileInfo.Name.Replace(".json", ""))
+                    })
                     .Select(container =>
-                        Repository.DropTableAsync(container.fileInfo.Name.Replace(".json", ""))
-                            .ContinueWith(task =>
-                                Repository.SaveAllAsync(container.file, container.fileInfo.Name.Replace(".json", "")))
-                            .Unwrap()));
+                        container.repository.DropCollectionAsync()
+                            .ContinueWith(task => LoadFromFileAsync(container.fileInfo.FullName))
+                            .Unwrap()
+                            .ContinueWith(fileTask => container.repository.BatchSaveAsync(fileTask.Result))
+                            .Unwrap()).AsParallel());
+        }
+
+        protected async Task<ICollection<string>> LoadFromFileAsync(string fileName)
+        {
+            List<string> jsonCollection = new List<string>();
+
+            using (StreamReader reader = new StreamReader(fileName))
+            {
+                string line;
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(line))
+                    {
+                        jsonCollection.Add(line);
+                    }
+                }
+            }
+
+            return jsonCollection;
         }
     }
 }

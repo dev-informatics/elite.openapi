@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -22,6 +23,7 @@ namespace Eddi.LoaderService.Jobs
             ListenerCancellationToken = cancellationProvider.RetrieveOrCreate<EddnListenerJob>();
         }
 
+        [SuppressMessage("ReSharper", "MethodSupportsCancellation")]
         public void Execute(IJobExecutionContext context)
         {
             Listener.BeginListener(ProcessMessage, ListenerCancellationToken, 15).Wait();

@@ -18,6 +18,7 @@ namespace Eddi.LoaderService.Modules
                 .InSingletonScope()
                 .WithConstructorArgument("connectionString", ConfigurationManager.AppSettings["MongoDbConnectionString"])
                 .WithConstructorArgument("database", ConfigurationManager.AppSettings["MongoDatabase"]);
+            Bind<CollectionRepositoryFactory>().ToSelf();
         }
 
     }
