@@ -1,7 +1,10 @@
-﻿using Eddb.Sdk.Data.Core;
+﻿using System;
+using Eddb.Sdk.Data.Core;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Eddb.Sdk.Data.MongoDb
@@ -22,13 +25,11 @@ namespace Eddb.Sdk.Data.MongoDb
 
         public async Task BatchSaveAsync(IEnumerable<string> jsonCollection)
         {
-            foreach (string json in jsonCollection)
+            foreach (var doc in jsonCollection
+                .Where(json => !string.IsNullOrWhiteSpace(json))
+                .Select(BsonDocument.Parse))
             {
-                if (!string.IsNullOrWhiteSpace(json))
-                {
-                    var doc = BsonDocument.Parse(json);
-                    await _collection.InsertOneAsync(doc);
-                }
+                await _collection.InsertOneAsync(doc);
             }
         }
 
@@ -41,6 +42,45 @@ namespace Eddb.Sdk.Data.MongoDb
         {
             var doc = BsonDocument.Parse(jsonString);
             await _collection.InsertOneAsync(doc);
+        }
+    }
+
+    public class MongoDbCollectionRepository<T> : ICollectionRepository<T>
+    {
+        private readonly IMongoCollection<T> _collection;
+        private readonly IMongoDatabase _database;
+        private readonly string _collectionName;
+
+        public MongoDbCollectionRepository(string connectionString, string database, string collection)
+        {
+            _database = new MongoClient(connectionString)
+                .GetDatabase(database);
+            _collection = _database.GetCollection<T>(collection);
+            _collectionName = collection;
+        }
+
+        public async Task BatchSaveAsync(IEnumerable<T> items)
+        {
+            foreach (var item in items
+                .Where(item => item != null))
+            {
+                await _collection.InsertOneAsync(item);
+            }
+        }
+
+        public async Task DropCollectionAsync()
+        {
+            await _database.DropCollectionAsync(_collectionName);
+        }
+
+        public async Task SaveAsync(T item)
+        {
+            await _collection.InsertOneAsync(item);
+        }
+
+        public async Task<IList<T>> FindAsync(Expression<Func<T, bool>> filterExpression)
+        {
+            return await (await _collection.FindAsync(filterExpression)).ToListAsync();
         }
     }
 }

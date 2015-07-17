@@ -13,13 +13,13 @@ namespace Eddi.LoaderService
     {
         protected IScheduler Scheduler { get; }
 
-        protected CancellationTokenSource EddnListernerCancellationSource { get; set; }
+        protected CancellationTokenSource EddnListenerCancellationSource { get; set; }
 
         public HostService(IScheduler scheduler, CancellationTokenSourceProvider cancellationSourceProvider)
         {
             Scheduler = scheduler;
 
-            EddnListernerCancellationSource = cancellationSourceProvider
+            EddnListenerCancellationSource = cancellationSourceProvider
                 .RetrieveOrCreate<EddnListenerJob>();
         }
 
@@ -27,7 +27,7 @@ namespace Eddi.LoaderService
         {
             try
             {
-                ScheduleEddbLoad();
+                //ScheduleEddbLoad();
 
                 ScheduleEddnListener();
 
@@ -49,7 +49,7 @@ namespace Eddi.LoaderService
         public bool Stop()
         {
             //TODO: Log
-            EddnListernerCancellationSource.Cancel();
+            EddnListenerCancellationSource.Cancel();
 
             Scheduler.Shutdown(true);
 

@@ -13,5 +13,19 @@ namespace Eddi.LoaderService
 
             return new MongoDbCollectionRepository(connectionString, database, collectionName);
         }
+
+        public ICollectionRepository Get(string database, string collectionName)
+        {
+            var connectionString = ConfigurationManager.AppSettings["MongoDbConnectionString"];
+
+            return new MongoDbCollectionRepository(connectionString, database, collectionName);
+        }
+
+        public ICollectionRepository<T> Get<T>(string database, string collectionName)
+        {
+            var connectionString = ConfigurationManager.AppSettings["MongoDbConnectionString"];
+
+            return new MongoDbCollectionRepository<T>(connectionString, database, collectionName);
+        }
     }
 }
