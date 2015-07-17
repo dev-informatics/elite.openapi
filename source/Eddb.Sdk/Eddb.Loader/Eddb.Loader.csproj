@@ -85,6 +85,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectionRepositoryFactory.cs" />
     <Compile Include="EddbLoaderService.cs" />
     <Compile Include="LoaderModule.cs" />
     <Compile Include="Program.cs" />
