@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Eddb.Sdk
 {
@@ -27,7 +28,7 @@ namespace Eddb.Sdk
             _baseUri = baseUri;
         }
 
-        public void DownloadJson(ConnectionEntity connectionEntity, string filepath)
+        public async Task DownloadJson(ConnectionEntity connectionEntity, string filepath)
         {
             if (!Directory.Exists(filepath))
                 Directory.CreateDirectory(filepath);
@@ -36,21 +37,24 @@ namespace Eddb.Sdk
             var uri = new Uri(_baseUri + "/" + typePart + ".json");
 
             string fileName = filepath + "\\" + typePart + ".json";
-            WebClient client = new WebClient();
-
-            using (StreamReader reader = new StreamReader(new MemoryStream(client.DownloadData(uri))))
+            using (WebClient client = new WebClient())
             {
-                var content = reader.ReadToEnd();
-                JArray jsonArray = JArray.Parse(content);               
-
-                using (StreamWriter writer = new StreamWriter(File.Create(fileName)))
+                using (StreamReader reader = new StreamReader(new MemoryStream(await client.DownloadDataTaskAsync(uri))))
                 {
-                    foreach (var item in jsonArray.Children())
+                    var content = reader.ReadToEnd();
+                    JArray jsonArray = JArray.Parse(content);
+
+                    using (StreamWriter writer = new StreamWriter(File.Create(fileName)))
                     {
-                        writer.WriteLine(item.ToString(Newtonsoft.Json.Formatting.None));
+                        foreach (var item in jsonArray.Children())
+                        {
+                            writer.WriteLine(item.ToString(Newtonsoft.Json.Formatting.None));
+                        }
                     }
                 }
-            }              
+            }
+
+
         }
     }
 }
